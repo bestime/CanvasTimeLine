@@ -1,0 +1,51 @@
+{
+  "name": "@bestime/canvas-time-line",
+  "version": "1.0.2",
+  "main": "dist/release/esm/index.min.js",
+  "types": "dist/release/esm/index.d.ts",
+  "description": "个人常用typescript工具库",
+  "type": "module",
+  "files": [
+    "dist/release/esm/index.min.js",
+    "dist/release/esm/index.d.ts"
+  ],
+  "devDependencies": {
+    "@babel/core": "7.18.6",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/plugin-transform-arrow-functions": "^7.18.6",
+    "@babel/plugin-transform-async-to-generator": "^7.18.6",
+    "@babel/plugin-transform-block-scoping": "7.18.6",
+    "@babel/plugin-transform-classes": "^7.20.2",
+    "@babel/plugin-transform-parameters": "^7.18.8",
+    "@babel/plugin-transform-shorthand-properties": "7.18.6",
+    "@babel/plugin-transform-spread": "^7.18.9",
+    "@babel/plugin-transform-template-literals": "7.18.6",
+    "@rollup/plugin-babel": "6.0.3",
+    "@rollup/plugin-commonjs": "24.0.0",
+    "@rollup/plugin-node-resolve": "15.0.1",
+    "rollup": "3.8.1",
+    "rollup-plugin-livereload": "2.0.5",
+    "rollup-plugin-typescript2": "0.34.1",
+    "rollup-plugin-uglify": "6.0.4",
+    "typescript": "4.9.4"
+  },
+  "scripts": {
+    "build": "rollup --config rollup.config.prod.js",
+    "serve": "rollup --config rollup.config.dev.js --watch"
+  },
+  "author": "bestime1020@gmail.com",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bestime/tool.git"
+  },
+  "homepage": "https://github.com/bestime/tool",
+  "dependencies": {
+    "@babel/plugin-proposal-class-static-block": "^7.20.7",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
+    "@babel/plugin-proposal-optional-chaining": "^7.20.7",
+    "@bestime/utils": "^1.0.2",
+    "@types/lodash-es": "^4.17.6",
+    "lodash-es": "^4.17.21"
+  }
+}

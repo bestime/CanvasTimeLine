@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试页面999</title>
+    <script src="./dist/dev/index.js"></script>
+
+    <!-- <script>
+      document.write(
+        `\<script src="./dist/release/iife/index.min.js?t=${new Date().getTime()}"\><\/script\>`
+      );
+    </script> -->
+    <style>
+      .tree-item {
+        line-height: normal;
+        margin: 0;
+        padding: 0 0 0 10px;
+        line-height: 32px;
+        background: #f9f9f9;
+      }
+  
+      .tree-item a {
+        display: block;
+        font-style: normal;
+      }
+    </style>
+  </head>
+  <body>
+
+
+    <canvas id="demo" style="display: block;width: 100%;"/>
+
+    <script type="text/javascript">
+
+      const iCanvasTimeLine = new CanvasTimeLine(document.getElementById('demo'), {
+        precision: 'second'
+      })
+
+
+      iCanvasTimeLine.setRange('2023-03-03 11:58:00', '2023-03-03 12:10:00')
+      iCanvasTimeLine.setDateTime('2023-03-03 12:00:00')
+
+      console.log("iCanvasTimeLine", iCanvasTimeLine)
+
+    </script>
+  </body>
+</html>
