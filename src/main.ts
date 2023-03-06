@@ -1,11 +1,9 @@
 import { cloneEasy, observeDomResize, padStart } from '@bestime/utils'
 import { debounce, throttle } from 'lodash-es';
-const centerLineColor = '#ffcc00';
+
 const canvasHeight = 60
-const scaleEnableColor = 'green';
-const scaleDisabledColor = 'red';
-const mouseInfoColor = '#d7d7d7';
-const timeTextFont = '12px serif';
+
+
 
 type TimeKey = keyof ReturnType<typeof convertTime>
 
@@ -37,55 +35,72 @@ function parseStep (data: CanvasTimeLine.Step): {
   step: number,
   scale:string
   parent:string
+  scaleName:string
 } {
   let step = 0
   let scale = 'second'
   let parent = 'minute'
+  let scaleName = '分'
   switch (data) {
     case 'second':
       step = 1000;
       scale = 'second';
       parent = 'minute'
+      scaleName = '分'
       break;
     case 'minute':
       step = 1000 * 60;
       scale = 'minute';
       parent = 'hour'
+      scaleName = '时'
       break;
   }
 
   return {
     step,
     scale,
-    parent
+    parent,
+    scaleName
   }
 }
 
 export default class CanvasTimeLine{
   private _canvas: HTMLCanvasElement
   private _range = [0, 0]
-  _options: CanvasTimeLine.Options
+  _options: {
+    style: CanvasTimeLine.Style,
+    precision: CanvasTimeLine.Options['precision'],
+    onChange?: CanvasTimeLine.Options['onChange'],
+  }
+  _preValue = 0
   private _datetime = new Date().getTime()
   _times = [] as string[];
+  _timerEmit: any
   _ctx: CanvasRenderingContext2D;
   _pressX = 0
   _isMouseDown = false
   _pressTime = 0
   _step = parseStep('second')
+  _obsEle: ReturnType<typeof observeDomResize>
   _mouseX: number | undefined;
 
 
-  constructor (canvas: HTMLCanvasElement, options?: CanvasTimeLine.Options) {
+  constructor (canvas: HTMLCanvasElement, options?: Partial<CanvasTimeLine.Options>) {
     this._onMouseup = this._onMouseup.bind(this)
     this._onMouesmove = throttle(this._onMouesmove.bind(this), 17)
-    this._emitTime = throttle(this._emitTime.bind(this), 200)
+    // this._emitTime = debounce(this._emitTime.bind(this), 500)
     this._canvas = canvas
     this._ctx = canvas.getContext('2d')!
     this._options = Object.assign({
       style: {
-        backgroundColor: 'black'
+        backgroundColor: 'black',
+        scaleEnableColor: '#888888',
+        scaleDisabledColor: '#333',
+        mouseInfoColor: '#d7d7d7',
+        centerColor: '#ffcc00',
+        font: '12px serif',
       },
-      precision: 'second'
+      precision: 'minute'
     }, options)
 
     this._step = parseStep(this._options.precision)
@@ -95,10 +110,12 @@ export default class CanvasTimeLine{
     // this.draw = debounce(this.draw, 16)
 
     this._initDrag()
+    // this._datetime = this._getLimitTime(new Date().getTime())
 
-    // observeDomResize(this._canvas, () => {
-    //   this.updateSize()
-    // }, 'width', 100)
+
+    this._obsEle = observeDomResize(this._canvas, () => {
+      this.updateSize()
+    }, 'width', 100)
   }
 
   draw () {
@@ -140,13 +157,20 @@ export default class CanvasTimeLine{
       const boundary = this._canvas.getBoundingClientRect();
       const x = ev.clientX - boundary.left;
       this.setDateTime(this._times[x]);
-      this._emitTime()
     };
   }
 
   _emitTime () {
-
-    console.log("时间改变", formatTime(convertTime(this._datetime)))
+    clearTimeout(this._timerEmit)
+    if(this._options.onChange) {
+      this._timerEmit = setTimeout(() => {
+        if(this._preValue !== this._datetime) {
+          this._preValue =  this._datetime
+          const value = formatTime(convertTime(this._datetime))
+          this._options.onChange!(value)
+        }
+      }, 200)  
+    }
   }
 
   _drawMouseInfo() {
@@ -154,7 +178,7 @@ export default class CanvasTimeLine{
     if (typeof this._mouseX !== 'number' || !this._times[this._mouseX]) return;
     const x = this._mouseX;
 
-    const color = mouseInfoColor;
+    const color = this._options.style.mouseInfoColor;
 
     // 绘制鼠标移动的刻度
     this._ctx.beginPath();
@@ -175,19 +199,18 @@ export default class CanvasTimeLine{
 
     this._ctx.beginPath();
     this._ctx.fillStyle = color;
-    this._ctx.font = timeTextFont;
+    this._ctx.font = this._options.style.font;
     this._ctx.fillText(this._times[x], textLeft, 42);
     this._ctx.closePath();
   }
 
   _onMouesmove (ev: MouseEvent) {
     const x = ev.clientX - this._pressX
-    this._datetime = this._pressTime - x * this._step.step
+    this._datetime = this._getLimitTime(this._pressTime - x * this._step.step)
     this.draw()
   }
 
-  _onMouseup () {
-    
+  _onMouseup () {    
     this._isMouseDown = false
     document.removeEventListener('mouseup', this._onMouseup)
     document.removeEventListener('mousemove', this._onMouesmove)
@@ -195,6 +218,7 @@ export default class CanvasTimeLine{
   }
 
   _drawScaleInfo (width: number, left: number) {
+    
  
     const drawBeginTime = this._datetime - left * this._step.step;
     this._ctx.lineWidth = 1;
@@ -213,7 +237,7 @@ export default class CanvasTimeLine{
       // 10个小刻度绘制一个文本
       const scaleHeight = isLabel ? 14 : 8;
       
-      let color = this._checkEnableTime(stamp) ? scaleEnableColor : scaleDisabledColor;
+      let color = this._checkEnableTime(stamp) ? this._options.style.scaleEnableColor : this._options.style.scaleDisabledColor;
 
       this._ctx.strokeStyle = color;
       let x = a - 0.5;
@@ -226,10 +250,12 @@ export default class CanvasTimeLine{
       
         this._ctx.beginPath();
         this._ctx.fillStyle = color;
-        this._ctx.font = timeTextFont;
+        this._ctx.font = this._options.style.font;
+        const text= `${padStart(time[this._step.parent as TimeKey], 2, '0')}${this._step.scaleName}`
+        const txtWidth = this._ctx.measureText(text).width
         this._ctx.fillText(
-          `${padStart(time[this._step.parent as TimeKey], 2, '0')}:${padStart(time[this._step.scale as TimeKey], 2, '0')}`,
-          a - 16,
+          text,
+          a - Math.floor(txtWidth/2),
           26
         );
         this._ctx.closePath();
@@ -238,9 +264,10 @@ export default class CanvasTimeLine{
   }
 
   _drawCenterLine(x: number) {
+    if(!this._checkEnableTime(this._datetime)) return;
     // 绘制鼠标移动的刻度
     this._ctx.beginPath();
-    this._ctx.strokeStyle = centerLineColor;
+    this._ctx.strokeStyle = this._options.style.centerColor;
     this._ctx.lineWidth = 2;
     this._ctx.moveTo(x, 0);
     this._ctx.lineTo(x, 43);
@@ -249,8 +276,8 @@ export default class CanvasTimeLine{
 
     // 绘制鼠标移动的文本
     this._ctx.beginPath();
-    this._ctx.fillStyle = centerLineColor;
-    this._ctx.font = timeTextFont;
+    this._ctx.fillStyle = this._options.style.centerColor;
+    this._ctx.font = this._options.style.font;
     this._ctx.fillText(this._times[x], x - 50, 55);
     this._ctx.closePath();
 
@@ -258,9 +285,9 @@ export default class CanvasTimeLine{
   }
 
   _checkEnableTime(date: number) {
-    if (typeof this._range[0] === 'number' && date < this._range[0]) {
+    if (this._range[0] !==0 && date < this._range[0]) {
       return false;
-    } else if (typeof this._range[1] === 'number' && date > this._range[1]) {
+    } else if (this._range[1]!==0 && date > this._range[1]) {
       return false;
     }
 
@@ -270,20 +297,34 @@ export default class CanvasTimeLine{
   setDateTime (datetime: string) {
     this._isMouseDown = false
     this._mouseX = undefined;
-    this._datetime = new Date(datetime).getTime()
+    this._datetime = this._getLimitTime(new Date(datetime).getTime())
     this.draw()
-    
+    this._emitTime()
   }
 
   setRange (start: string, end: string) {
     this._range[0] = new Date(start).getTime()
     this._range[1] = new Date(end).getTime()
+    this._datetime = this._getLimitTime(this._datetime)
     this.draw()
+    this._emitTime()
   }
 
   setStyle (data: CanvasTimeLine.Style) {
     this._options.style = data
     this._canvas.style['backgroundColor'] = this._options.style.backgroundColor
+  }
+
+  _getLimitTime(date: number) {
+    if (!this._checkEnableTime(date)) {
+      if (date > this._range[1]) {
+        date = this._range[1];
+      } else {
+        date = this._range[0];
+      }
+    }
+
+    return date;
   }
 
   updateSize () {
@@ -295,6 +336,8 @@ export default class CanvasTimeLine{
   }
 
   dispose () {
+    this._obsEle()
+    clearTimeout(this._timerEmit)
     document.removeEventListener('mouseup', this._onMouseup)
     document.removeEventListener('mousemove', this._onMouesmove)
   }

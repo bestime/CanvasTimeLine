@@ -48,7 +48,7 @@ export default {
       banner: getBanner('iife'),
       format: 'iife',    
       strict: true,
-      name: 'bestime',
+      name: 'CanvasTimeLine',
       indent: false,
       sourcemap: false,
       
@@ -82,7 +82,7 @@ export default {
       output: {
         beautify: false,
         comments: function(node, comment) {
-            return /@see/i.test(comment.value);
+            return /CanvasTimeLine\.\w+\.min\.js/i.test(comment.value);
         }
       }
     }),    

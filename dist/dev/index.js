@@ -566,12 +566,7 @@ function throttle(func, wait, options) {
   });
 }
 
-const centerLineColor = '#ffcc00';
 const canvasHeight = 60;
-const scaleEnableColor = 'green';
-const scaleDisabledColor = 'red';
-const mouseInfoColor = '#d7d7d7';
-const timeTextFont = '12px serif';
 function formatTime(data) {
     const year = padStart(data.year, 4, '0');
     const month = padStart(data.month, 2, '0');
@@ -597,30 +592,36 @@ function parseStep(data) {
     let step = 0;
     let scale = 'second';
     let parent = 'minute';
+    let scaleName = '分';
     switch (data) {
         case 'second':
             step = 1000;
             scale = 'second';
             parent = 'minute';
+            scaleName = '分';
             break;
         case 'minute':
             step = 1000 * 60;
             scale = 'minute';
             parent = 'hour';
+            scaleName = '时';
             break;
     }
     return {
         step,
         scale,
-        parent
+        parent,
+        scaleName
     };
 }
 class CanvasTimeLine {
     _canvas;
     _range = [0, 0];
     _options;
+    _preValue = 0;
     _datetime = new Date().getTime();
     _times = [];
+    _timerEmit;
     _ctx;
     _pressX = 0;
     _isMouseDown = false;
@@ -630,12 +631,17 @@ class CanvasTimeLine {
     constructor(canvas, options) {
         this._onMouseup = this._onMouseup.bind(this);
         this._onMouesmove = throttle(this._onMouesmove.bind(this), 17);
-        this._emitTime = throttle(this._emitTime.bind(this), 200);
+        // this._emitTime = debounce(this._emitTime.bind(this), 500)
         this._canvas = canvas;
         this._ctx = canvas.getContext('2d');
         this._options = Object.assign({
             style: {
-                backgroundColor: 'black'
+                backgroundColor: 'black',
+                scaleEnableColor: '#888888',
+                scaleDisabledColor: '#333',
+                mouseInfoColor: '#d7d7d7',
+                centerColor: '#ffcc00',
+                font: '12px serif',
             },
             precision: 'second'
         }, options);
@@ -644,6 +650,7 @@ class CanvasTimeLine {
         this.setStyle(this._options.style);
         // this.draw = debounce(this.draw, 16)
         this._initDrag();
+        // this._datetime = this._getLimitTime(new Date().getTime())
         // observeDomResize(this._canvas, () => {
         //   this.updateSize()
         // }, 'width', 100)
@@ -681,18 +688,23 @@ class CanvasTimeLine {
             const boundary = this._canvas.getBoundingClientRect();
             const x = ev.clientX - boundary.left;
             this.setDateTime(this._times[x]);
-            this._emitTime();
         };
     }
     _emitTime() {
-        console.log("时间改变", formatTime(convertTime(this._datetime)));
+        clearTimeout(this._timerEmit);
+        this._timerEmit = setTimeout(() => {
+            if (this._preValue !== this._datetime) {
+                this._preValue = this._datetime;
+                console.log("时间改变", formatTime(convertTime(this._datetime)));
+            }
+        }, 200);
     }
     _drawMouseInfo() {
         // if(this._isMouseDown) return;
         if (typeof this._mouseX !== 'number' || !this._times[this._mouseX])
             return;
         const x = this._mouseX;
-        const color = mouseInfoColor;
+        const color = this._options.style.mouseInfoColor;
         // 绘制鼠标移动的刻度
         this._ctx.beginPath();
         this._ctx.strokeStyle = color;
@@ -709,13 +721,13 @@ class CanvasTimeLine {
         textLeft = Math.max(textLeft, 2);
         this._ctx.beginPath();
         this._ctx.fillStyle = color;
-        this._ctx.font = timeTextFont;
+        this._ctx.font = this._options.style.font;
         this._ctx.fillText(this._times[x], textLeft, 42);
         this._ctx.closePath();
     }
     _onMouesmove(ev) {
         const x = ev.clientX - this._pressX;
-        this._datetime = this._pressTime - x * this._step.step;
+        this._datetime = this._getLimitTime(this._pressTime - x * this._step.step);
         this.draw();
     }
     _onMouseup() {
@@ -738,7 +750,7 @@ class CanvasTimeLine {
             const isLabel = time[this._step.scale] === 0;
             // 10个小刻度绘制一个文本
             const scaleHeight = isLabel ? 14 : 8;
-            let color = this._checkEnableTime(stamp) ? scaleEnableColor : scaleDisabledColor;
+            let color = this._checkEnableTime(stamp) ? this._options.style.scaleEnableColor : this._options.style.scaleDisabledColor;
             this._ctx.strokeStyle = color;
             let x = a - 0.5;
             this._ctx.moveTo(x, 0);
@@ -748,16 +760,20 @@ class CanvasTimeLine {
             if (isLabel) {
                 this._ctx.beginPath();
                 this._ctx.fillStyle = color;
-                this._ctx.font = timeTextFont;
-                this._ctx.fillText(`${padStart(time[this._step.parent], 2, '0')}:${padStart(time[this._step.scale], 2, '0')}`, a - 16, 26);
+                this._ctx.font = this._options.style.font;
+                const text = `${padStart(time[this._step.parent], 2, '0')}${this._step.scaleName}`;
+                const txtWidth = this._ctx.measureText(text).width;
+                this._ctx.fillText(text, a - Math.floor(txtWidth / 2), 26);
                 this._ctx.closePath();
             }
         }
     }
     _drawCenterLine(x) {
+        if (!this._checkEnableTime(this._datetime))
+            return;
         // 绘制鼠标移动的刻度
         this._ctx.beginPath();
-        this._ctx.strokeStyle = centerLineColor;
+        this._ctx.strokeStyle = this._options.style.centerColor;
         this._ctx.lineWidth = 2;
         this._ctx.moveTo(x, 0);
         this._ctx.lineTo(x, 43);
@@ -765,16 +781,16 @@ class CanvasTimeLine {
         this._ctx.closePath();
         // 绘制鼠标移动的文本
         this._ctx.beginPath();
-        this._ctx.fillStyle = centerLineColor;
-        this._ctx.font = timeTextFont;
+        this._ctx.fillStyle = this._options.style.centerColor;
+        this._ctx.font = this._options.style.font;
         this._ctx.fillText(this._times[x], x - 50, 55);
         this._ctx.closePath();
     }
     _checkEnableTime(date) {
-        if (typeof this._range[0] === 'number' && date < this._range[0]) {
+        if (this._range[0] !== 0 && date < this._range[0]) {
             return false;
         }
-        else if (typeof this._range[1] === 'number' && date > this._range[1]) {
+        else if (this._range[1] !== 0 && date > this._range[1]) {
             return false;
         }
         return true;
@@ -782,17 +798,31 @@ class CanvasTimeLine {
     setDateTime(datetime) {
         this._isMouseDown = false;
         this._mouseX = undefined;
-        this._datetime = new Date(datetime).getTime();
+        this._datetime = this._getLimitTime(new Date(datetime).getTime());
         this.draw();
+        this._emitTime();
     }
     setRange(start, end) {
         this._range[0] = new Date(start).getTime();
         this._range[1] = new Date(end).getTime();
+        this._datetime = this._getLimitTime(this._datetime);
         this.draw();
+        this._emitTime();
     }
     setStyle(data) {
         this._options.style = data;
         this._canvas.style['backgroundColor'] = this._options.style.backgroundColor;
+    }
+    _getLimitTime(date) {
+        if (!this._checkEnableTime(date)) {
+            if (date > this._range[1]) {
+                date = this._range[1];
+            }
+            else {
+                date = this._range[0];
+            }
+        }
+        return date;
     }
     updateSize() {
         const width = this._canvas.offsetWidth;
@@ -802,6 +832,7 @@ class CanvasTimeLine {
         this.draw();
     }
     dispose() {
+        clearTimeout(this._timerEmit);
         document.removeEventListener('mouseup', this._onMouseup);
         document.removeEventListener('mousemove', this._onMouesmove);
     }
