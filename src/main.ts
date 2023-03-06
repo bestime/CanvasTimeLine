@@ -122,6 +122,8 @@ export default class CanvasTimeLine{
     this._times = []
     const width = this._canvas.offsetWidth
     this._ctx.clearRect(0, 0, width, canvasHeight);
+    this._ctx.fillStyle = this._options.style.backgroundColor
+    this._ctx.fillRect(0,0,width, canvasHeight)
     const left = Math.ceil(width / 2); 
     this._drawScaleInfo(width, left)    
     this._drawCenterLine(left)
@@ -312,7 +314,7 @@ export default class CanvasTimeLine{
 
   setStyle (data: CanvasTimeLine.Style) {
     this._options.style = data
-    this._canvas.style['backgroundColor'] = this._options.style.backgroundColor
+    // this._canvas.style['backgroundColor'] = this._options.style.backgroundColor
   }
 
   _getLimitTime(date: number) {
