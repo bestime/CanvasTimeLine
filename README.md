@@ -1,6 +1,8 @@
 ### 带刻度的时间轴
 
-![image](./sources/demo.png)
+- 在线示例(https://bestime.github.io/CanvasTimeLine/)
+- 预览图片
+  ![image](./sources/demo.png)
 
 CanvasTimeLine.d.ts 声明文件
 ```ts
