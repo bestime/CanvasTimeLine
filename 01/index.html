@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试页面999</title>
+    <script src="./index.min.js?t=1"></script>
+  </head>
+  <body>
+
+    <div>
+      <input id="time-value" value="2023-03-03 12:08:30"/>
+      <button id="time-button">设置时间</button>
+    </div>
+    <canvas id="demo" style="display: block;width: 100%;margin-top:20px;"/>
+
+    <script type="text/javascript">
+
+      const iCanvasTimeLine = new CanvasTimeLine(document.getElementById('demo'), {
+        precision: 'minute',
+        style: {
+          backgroundColor: 'black',
+          scaleEnableColor: '#888888',
+          scaleDisabledColor: '#333',
+          mouseInfoColor: '#d7d7d7',
+          centerColor: '#ffcc00',
+          font: '12px serif',
+        },
+        onChange: function (datetime) {
+          console.log("时间改变回调：", datetime)
+        }
+      })
+
+
+      iCanvasTimeLine.setDateTime('2023-03-03 12:00:00')
+      iCanvasTimeLine.setRange('2023-03-03 02:58:00', '2023-03-03 15:10:00')
+
+      document.getElementById('time-button').onclick = function () {
+        const time = document.getElementById('time-value').value
+        iCanvasTimeLine.setDateTime(time)
+      }
+
+      // console.log("iCanvasTimeLine", iCanvasTimeLine)
+
+    </script>
+  </body>
+</html>

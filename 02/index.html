@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>时间轴</title>    
+    <link rel="stylesheet" href="./index.css"/>
+    <script src="./index.min.js"></script>    
+  </head>
+  <body style="background-color: #545454;">
+    
+
+    <div >
+      <input id="time-value" value="2023-03-03 12:08:30"/>
+      <button id="time-button">设置时间</button>
+    </div>
+    <div id="demo" style="margin:20px 100px 0 100px;"></div>
+    <script src="https://cdn.bootcdn.net/ajax/libs/dayjs/1.11.7/dayjs.min.js"></script>
+    <script type="text/javascript">
+
+
+      function createTimeData () {
+        const now = dayjs()
+        const list = []
+        for(let a=0;a<350;a++) {
+          list.unshift(now.subtract(a, 'minute').format('YYYY-MM-DD HH:mm:ss'))
+          list.push(now.add(a+1, 'minute').format('YYYY-MM-DD HH:mm:ss'))
+        }
+        return list
+      }
+
+      
+
+      const iCanvasTimeLine = new CanvasTimeLineTheme02(document.getElementById('demo'), {
+        scale: 'hour',
+        style: {
+          scaleLineColor: 'white'
+        },
+        scaleSpace: 100,
+        labelFormat: function (datetime) {
+          return dayjs(datetime).format("YYYY-MM-DD HH:mm")
+        },
+        scaleFormat: function (datetime) {
+          return dayjs(datetime).format("MM/DD HH时")
+        },
+        onChange: function (datetime, next) {
+          console.log("时间改变", datetime)
+          document.getElementById('time-value').value = datetime.value
+          next()
+        }
+      })
+
+      let list = [
+        '2023-03-23 12:00:00',
+        '2023-03-23 13:00:00',
+        '2023-03-23 14:00:00',
+        '2023-03-23 15:00:00',
+        '2023-03-23 16:00:00',
+        '2023-03-23 17:00:00',
+        '2023-03-23 18:00:00',
+        '2023-03-23 18:00:00',
+        '2023-03-23 20:00:00',
+        '2023-03-23 21:00:00',
+        '2023-03-23 22:00:00',
+        '2023-03-24 00:00:00',
+        '2023-03-24 02:00:00',
+        '2023-03-25 00:00:00',
+        '2023-03-25 01:00:00',
+        '2023-03-25 02:00:00',
+        '2023-03-25 03:00:00',
+      ]
+
+      list = createTimeData()
+      console.log("list", list)
+
+      iCanvasTimeLine.setData(list)
+      // iCanvasTimeLine.setDateTime('2023-03-28 12:00:00')
+
+
+     
+
+      document.getElementById('time-button').onclick = function () {
+        const time = document.getElementById('time-value').value
+        iCanvasTimeLine.setDateTime(time)
+      }
+
+      // console.log("iCanvasTimeLine", iCanvasTimeLine)
+
+    </script>
+  </body>
+</html>
