@@ -12,11 +12,18 @@ export default function convertList (data: string[], scale: CanvasTimeLineTheme0
     
     const time = convertTime(new Date(value).getTime())
     let prefix = ''
-    if(scale==='day') {
+    
+    if(scale === 'year') {
+      prefix = `${time.year}`
+    } else if(scale === 'month') {
+      prefix = `${time.year}-${time.month}`
+    } else if(scale==='day') {
       prefix = `${time.year}-${time.month}-${time.day}`
     } else if(scale === 'hour'){
-      prefix = `${time.year}-${time.month}-${time.day} ${time.hour}`
-    }
+      prefix = `${time.year}-${time.month}-${time.day} ${time.hour}`     
+    } else if(scale === 'minute'){
+      prefix = `${time.year}-${time.month}-${time.day} ${time.hour}:${time.minute}`
+    } 
     
     if(!cache[prefix]) {
       cache[prefix] = {
@@ -24,7 +31,7 @@ export default function convertList (data: string[], scale: CanvasTimeLineTheme0
         data: []
       }
     }
-    // console.log("单独", index, value)
+
     cache[prefix].data.push(value)
     
   }
@@ -38,6 +45,6 @@ export default function convertList (data: string[], scale: CanvasTimeLineTheme0
     return new Date(a.value).getTime() - new Date(b.value).getTime()
   })
 
-  // console.log("cache", cache, res)
+
   return res
 }

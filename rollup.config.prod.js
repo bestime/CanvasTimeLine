@@ -50,8 +50,15 @@ export default {
       strict: true,
       name: 'CanvasTimeLineTheme02',
       indent: false,
-      sourcemap: false,
-      
+      sourcemap: false,      
+    },
+    {
+      file: getDistPath('esm'),
+      banner: getBanner('esm'),
+      format: 'esm',
+      strict: true,
+      indent: false,
+      sourcemap: false,      
     }
   ],
   

@@ -8,9 +8,9 @@ var CanvasTimeLineTheme02 = (function () {
  * @QQ 1174295440
  * @author Bestime
  * @see https://github.com/bestime/tool
- * @update 2022-11-10 11:11:13
+ * @update 2023-03-28 14:45:43
  */
-function isNull(e){return null===e||e===undefined}function _String(e){return isNull(e)?"":String(e)}var $ArrayTypeNameBig="Array",$FunctionTypeNameBig="Function",$ObjectTypeNameBig="Object",$ObjectTypeNameBigPrototypeToString=Object.prototype.toString;function getType(e){return $ObjectTypeNameBigPrototypeToString.call(e).slice(8,-1)}function cloneEasy(e){switch(getType(e)){case $ArrayTypeNameBig:for(var t=[],n=0;n<e.length;n++)t.push(cloneEasy(e[n]));break;case $ObjectTypeNameBig:for(var r in t={},e)t[r]=cloneEasy(e[r]);break;case $FunctionTypeNameBig:function i(){e.apply(this,arguments);}for(var o in e.prototype)i.prototype[o]=e.prototype[o];t=i;break;default:t=e;}return t}function repeatString(e,t){var n="";if((e=_String(e)).length*t<1<<28)for(;1==(1&t)&&(n+=e),0!=(t>>>=1);)e+=e;return n}function hpPadString(e,t,n,r){return (e=_String(e)).length>(t>>=0)?e:(t-=e.length,n.length<t&&(n+=repeatString(n,t/n.length)),-1===r?n.slice(0,t)+e:e+n.slice(0,t))}function padStart(e,t,n){return hpPadString(e,t,n,-1)}document.getElementsByTagName("head")[0];var main$2=function(e,t,n,r){r=r||500;var i=[0,0,!1],o=[0,0,!1],a=setInterval(function(){e.isConnected?(i[0]=e.offsetWidth,o[0]=e.offsetHeight,i[2]=i[0]!==i[1],o[2]=o[0]!==o[1],i[2]&&(i[1]=i[0],"width"===n&&t(e)),o[2]&&(o[1]=o[0],"height"===n&&t(e)),n||(i[2]||o[2])&&t(e)):u();},r);function u(){clearInterval(a);}return u};
+function isNull(e){return null===e||e===undefined}function _String(e){return isNull(e)?"":String(e)}var $ArrayTypeNameBig="Array",$FunctionTypeNameBig="Function",$ObjectTypeNameBig="Object",$ObjectTypeNameBigPrototypeToString=Object.prototype.toString;document.getElementsByTagName("head")[0];function getType(e){return $ObjectTypeNameBigPrototypeToString.call(e).slice(8,-1)}function hpIsEmptyMap(e){var t,n=!0;for(t in e)if(t!==undefined){n=!1;break}return n}function cloneEasy(e){switch(getType(e)){case $ArrayTypeNameBig:for(var t=[],n=0;n<e.length;n++)t.push(cloneEasy(e[n]));break;case $ObjectTypeNameBig:for(var r in t={},e)t[r]=cloneEasy(e[r]);break;case $FunctionTypeNameBig:function i(){e.apply(this,arguments);}for(var a in e.prototype)i.prototype[a]=e.prototype[a];t=i;break;default:t=e;}return t}function repeatString(e,t){var n="";if((e=_String(e)).length*t<1<<28)for(;1==(1&t)&&(n+=e),0!=(t>>>=1);)e+=e;return n}function hpPadString(e,t,n,r){return (e=_String(e)).length>(t>>=0)?e:(t-=e.length,n.length<t&&(n+=repeatString(n,t/n.length)),-1===r?n.slice(0,t)+e:e+n.slice(0,t))}function padStart(e,t,n){return hpPadString(e,t,n,-1)}var timer,htivId=0,idName="",isStart=!1,records={};function stop(){isStart=!1,clearInterval(timer),timer=undefined;}function startRun(){clearInterval(timer),isStart=!0,timer=setInterval(function(){for(var e in records){var t=records[e];t.current=+new Date,t.current-t.start>=t.interval&&(t.start=t.current,records[e].handler());}},17);}function add(e,t){return idName="HI-"+ ++htivId,records[idName]={start:+new Date,current:0,handler:e,interval:t},isStart||startRun(),idName}function remove(e){delete records[e],hpIsEmptyMap(records)&&stop();}var hpInterval={add:add,remove:remove},main$2=function(n,r,i,e){var a=[0,0,!1],o=[0,0,!1],l=[0,0,!1],u=[0,0,!1],t=hpInterval.add(s,e=e||500);function s(){var e,t;document.body.contains(n)?(e=!1,null!=i&&i.includes("position")&&(t=n.getBoundingClientRect(),l[0]=t.left,l[2]=l[0]!==l[1],u[0]=t.top,u[2]=u[0]!==u[1]),a[0]=n.offsetWidth,a[2]=a[0]!==a[1],o[0]=n.offsetHeight,o[2]=o[0]!==o[1],a[2]&&(a[1]=a[0],null!=i&&i.includes("width")&&(e=!0)),o[2]&&(o[1]=o[0],null!=i&&i.includes("height")&&(e=!0)),(u[2]||l[2])&&(u[1]=u[0],l[1]=l[0],null!=i&&i.includes("position")&&(e=!0)),i&&0!==i.length||(a[2]||o[2]||u[2]||l[2])&&(e=!0),e&&r(n)):c();}function c(){hpInterval.remove(t),a=undefined,o=undefined;}return s(),c};
 
 /** Detect free variable `global` from Node.js. */
 var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
@@ -2478,6 +2478,25 @@ var mergeWith = createAssigner(function(object, source, srcIndex, customizer) {
 var mergeWith$1 = mergeWith;
 
 /**
+ * Gets the last element of `array`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Array
+ * @param {Array} array The array to query.
+ * @returns {*} Returns the last element of `array`.
+ * @example
+ *
+ * _.last([1, 2, 3]);
+ * // => 3
+ */
+function last(array) {
+  var length = array == null ? 0 : array.length;
+  return length ? array[length - 1] : undefined;
+}
+
+/**
  * Gets the first element of `array`.
  *
  * @static
@@ -2518,11 +2537,20 @@ function convertList(data, scale) {
         const value = data[index];
         const time = convertTime(new Date(value).getTime());
         let prefix = '';
-        if (scale === 'day') {
+        if (scale === 'year') {
+            prefix = `${time.year}`;
+        }
+        else if (scale === 'month') {
+            prefix = `${time.year}-${time.month}`;
+        }
+        else if (scale === 'day') {
             prefix = `${time.year}-${time.month}-${time.day}`;
         }
         else if (scale === 'hour') {
             prefix = `${time.year}-${time.month}-${time.day} ${time.hour}`;
+        }
+        else if (scale === 'minute') {
+            prefix = `${time.year}-${time.month}-${time.day} ${time.hour}:${time.minute}`;
         }
         if (!cache[prefix]) {
             cache[prefix] = {
@@ -2530,7 +2558,6 @@ function convertList(data, scale) {
                 data: []
             };
         }
-        // console.log("单独", index, value)
         cache[prefix].data.push(value);
     }
     const res = [];
@@ -2540,12 +2567,9 @@ function convertList(data, scale) {
     res.sort(function (a, b) {
         return new Date(a.value).getTime() - new Date(b.value).getTime();
     });
-    // console.log("cache", cache, res)
     return res;
 }
 
-const progressHeight = 6;
-const height = 26;
 class CanvasTimeLineTheme02 {
     _times = [];
     _options;
@@ -2559,16 +2583,17 @@ class CanvasTimeLineTheme02 {
         pre: 0,
         current: 0
     };
-    _playing = false;
     _currentPopper;
     _previewPopper;
     _playBtn;
     _canvasRoom;
+    _bodyPopper;
     currentTime = '';
     _locking = false;
     _timerAuto;
     _timerObv;
     _mousein = false;
+    _canvasHeight = 0;
     _obvHandler;
     constructor(element, options) {
         element.classList.add('canvas-timeLine-theme02');
@@ -2585,53 +2610,129 @@ class CanvasTimeLineTheme02 {
         this._canvasRoom = document.createElement('div');
         this._canvasRoom.className = 'canvas-room';
         this._element = element;
+        this._bodyPopper = document.createElement('div');
+        this._bodyPopper.className = 'body';
         // this._emitTime = debounce(this._emitTime.bind(this), 500)
         this._canvas = canvas;
         this._ctx = canvas.getContext('2d');
         this._options = mergeWith$1({
-            scale: 'day',
-            scaleSpace: 70,
-            autoPlayInterval: 1000,
-            style: {
-                font: '12px Microsoft YaHei',
-                progressBarBackgroundColor: '#35323f',
-                progressBarActiveColor: '#4492d5',
-                scaleLineColor: '#fff',
-                scaleFontColor: '#fff',
-            }
+            scale: {
+                type: 'day',
+                height: 6,
+                lineColor: '#fff',
+                fontColor: '#fff',
+                space: 70,
+                bottom: 4,
+                font: {
+                    size: 12,
+                    family: 'Microsoft YaHei'
+                },
+            },
+            autoplay: {
+                enabled: false,
+                interval: 60
+            },
+            progress: {
+                size: 6,
+                backgroundActiveColor: '#4492d5',
+                backgroundStaticColor: '#35323f',
+            },
+            label: {}
         }, options);
+        this._canvasHeight = this._options.scale.font.size + this._options.scale.bottom + this._options.scale.height + this._options.progress.size;
         this._initDrag();
-        element.appendChild(this._playBtn);
+        element.appendChild(this._bodyPopper);
+        this._bodyPopper.appendChild(this._playBtn);
         this._canvasRoom.appendChild(canvas);
-        element.appendChild(this._canvasRoom);
-        element.appendChild(this._currentPopper);
-        element.appendChild(this._previewPopper);
+        this._bodyPopper.appendChild(this._canvasRoom);
+        this._bodyPopper.appendChild(this._currentPopper);
+        this._bodyPopper.appendChild(this._previewPopper);
         this._obvHandler = main$2(this._element, () => {
-            this._canvas.style.width = this._times.length * this._options.scaleSpace + 'px';
+            this._canvas.style.width = this._times.length * this._options.scale.space + 'px';
             clearTimeout(this._timerObv);
             this._timerObv = setTimeout(() => {
                 this._scrollToCurrent();
             }, 30);
-        }, 'width', 100);
+        }, ['width', 'position'], 100);
         this._playBtn.onclick = () => {
-            clearTimeout(this._timerAuto);
-            this._playing = !this._playing;
-            if (!this._playing) {
-                this._playBtn.innerHTML = '播放';
-                return this;
+            if (this._options.autoplay.enabled) {
+                this.stop();
             }
-            this._playBtn.innerHTML = '暂停';
-            this._checkAutoPlay();
+            else {
+                this.play();
+            }
+            return this;
         };
+        if (this._options.autoplay.enabled && this._options.autoplay.interval > 0) {
+            this.play();
+        }
+        this._canvasRoom.style.borderTopWidth = (this._playBtn.offsetHeight - this._options.progress.size) / 2 + 'px';
+    }
+    play() {
+        clearTimeout(this._timerAuto);
+        this._options.autoplay.enabled = true;
+        this._playBtn.innerHTML = '暂停';
+        this._bodyPopper.classList.add('playing');
+        this._checkAutoPlay();
+        return this;
+    }
+    stop() {
+        clearTimeout(this._timerAuto);
+        this._options.autoplay.enabled = false;
+        this._playBtn.innerHTML = '播放';
+        this._bodyPopper.classList.remove('playing');
+        return this;
     }
     _checkAutoPlay() {
         clearTimeout(this._timerAuto);
-        if (this._playing && !this._mousein && this._options.autoPlayInterval > 0) {
+        if (this._options.autoplay.enabled && !this._mousein && this._options.autoplay.interval > 0) {
             this._timerAuto = setTimeout(() => {
                 const time = this._findNextTime();
                 this.setDateTime(time, false);
-            }, this._options.autoPlayInterval);
+            }, this._options.autoplay.interval);
         }
+    }
+    _getPrevTime() {
+        let time = '';
+        for (let a = this._times.length - 1; a >= 0; a--) {
+            for (let b = this._times[a].data.length - 1; b >= 0; b--) {
+                if (this._times[a].data[b] === this.currentTime) {
+                    if (b === 0) {
+                        if (a === 0) {
+                            time = this.currentTime;
+                        }
+                        else {
+                            time = last(this._times[a - 1].data);
+                        }
+                    }
+                    else {
+                        time = this._times[a].data[b - 1];
+                    }
+                }
+            }
+        }
+        return time;
+    }
+    _getNextTime() {
+        let time = '';
+        for (let a = 0; a < this._times.length; a++) {
+            for (let b = 0; b < this._times[a].data.length; b++) {
+                if (this._times[a].data[b] === this.currentTime) {
+                    if (b === this._times[a].data.length - 1) {
+                        if (a === this._times.length - 1) {
+                            time = this.currentTime;
+                        }
+                        else {
+                            time = this._times[a + 1].data[0];
+                        }
+                    }
+                    else {
+                        time = this._times[a].data[b + 1];
+                    }
+                }
+            }
+        }
+        return time;
     }
     _findNextTime() {
         let time = '';
@@ -2654,6 +2755,9 @@ class CanvasTimeLineTheme02 {
         }
         return time;
     }
+    get _minLeftSpace() {
+        return this._options.label.leftSpace ?? Math.floor(this._canvas.offsetWidth / 2);
+    }
     _onMouseup() {
         this._offsetX.pre = this._offsetX.current;
         document.removeEventListener('mouseup', this._onMouseup);
@@ -2661,37 +2765,38 @@ class CanvasTimeLineTheme02 {
     }
     _onMouesmove(ev) {
         const x = ev.clientX - this._pressX;
-        if (x > 0) {
-            this._offsetX.current = Math.min(x + this._offsetX.pre, 0);
-        }
-        else if (x < 0) {
-            let current = Math.max(x + this._offsetX.pre, -(this._times.length * this._options.scaleSpace - this._canvasRoom.offsetWidth));
+        let left = x + this._offsetX.pre + this._minLeftSpace;
+        if (x < 0) {
+            let current = Math.max(left, -(this._getMaxWidth() - this._canvasRoom.offsetWidth));
             this._offsetX.current = Math.min(current, 0);
         }
         else {
-            this._offsetX.current = x + this._offsetX.pre;
+            this._offsetX.current = Math.min(left, 0);
         }
         this.draw();
     }
     _initDrag() {
-        this._canvas.onmousedown = (ev) => {
+        this._canvas.onmousedown = ev => {
             this._mousein = true;
-            this._pressX = ev.clientX;
+            this._pressX = ev.clientX + this._minLeftSpace;
             document.removeEventListener('mouseup', this._onMouseup);
             document.removeEventListener('mousemove', this._onMouesmove);
             document.addEventListener('mouseup', this._onMouseup);
             document.addEventListener('mousemove', this._onMouesmove);
         };
-        this._canvas.onmousemove = (ev) => {
+        this._canvas.onmousemove = ev => {
             this._mousein = true;
             const time = this.getMouseDatetime(ev.clientX, this._currentWidth);
             if (time) {
                 const width = this._getCurrentLeft(time);
                 const currentScale = width + this._offsetX.current;
-                this._previewPopper.innerText = this._options.labelFormat ? this._options.labelFormat(time) : time;
+                this._previewPopper.innerText = this._options.label.formatter
+                    ? this._options.label.formatter(time)
+                    : time;
                 this._previewPopper.style.display = 'block';
                 const boundary = this._canvas.getBoundingClientRect();
-                this._previewPopper.style.left = boundary.left + currentScale - this._previewPopper.offsetWidth / 2 + 'px';
+                this._previewPopper.style.left =
+                    boundary.left + currentScale - this._previewPopper.offsetWidth / 2 + 'px';
                 this._previewPopper.style.top = boundary.top - this._previewPopper.offsetHeight - 8 + 'px';
             }
             else {
@@ -2703,7 +2808,7 @@ class CanvasTimeLineTheme02 {
             this._mousein = false;
             this._checkAutoPlay();
         }, 200);
-        this._canvas.ondblclick = (ev) => {
+        this._canvas.ondblclick = ev => {
             const time = this.getMouseDatetime(ev.clientX, this._currentWidth);
             time && this.setDateTime(time, true);
         };
@@ -2716,9 +2821,9 @@ class CanvasTimeLineTheme02 {
                 if (this._times[a].data[b] === time) {
                     let length = this._times[a].data.length;
                     if (a === this._times.length - 1) {
-                        length--;
+                        length = Math.max(length - 1, 1);
                     }
-                    width = a * this._options.scaleSpace + this._options.scaleSpace / length * b;
+                    width = a * this._options.scale.space + (this._options.scale.space / length) * b;
                     isFind = true;
                     break;
                 }
@@ -2735,15 +2840,15 @@ class CanvasTimeLineTheme02 {
             return new Date(a).getTime() - new Date(b).getTime();
         });
         this._originTimes = data;
-        this._times = convertList(data, this._options.scale);
+        this._times = convertList(data, this._options.scale.type);
         if (data.length) {
-            this._canvas.style.width = this._times.length * this._options.scaleSpace + 'px';
+            this._canvas.style.width = this._times.length * this._options.scale.space + 'px';
             this.setDateTime(head(data), false);
-            // this.setDateTime('2023-03-23 06:15:47', false)
         }
+        return this;
     }
     draw() {
-        const maxWidth = this._times.length * this._options.scaleSpace;
+        const maxWidth = this._getMaxWidth();
         let width = this._canvasRoom.offsetWidth;
         if (this._canvasRoom.offsetWidth > maxWidth) {
             width = maxWidth;
@@ -2751,25 +2856,34 @@ class CanvasTimeLineTheme02 {
             this._offsetX.pre = 0;
         }
         this._canvas.width = width;
-        this._canvas.height = height;
+        this._canvas.height = this._canvasHeight;
         this._canvas.style.width = width + 'px';
-        this._canvas.style.height = height + 'px';
-        this._canvasRoom.style.height = height + 'px';
+        this._canvas.style.height = this._canvasHeight + 'px';
+        this._canvasRoom.style.height = this._canvasHeight + 'px';
         this._ctx.fillStyle = 'transparent';
-        this._ctx.fillRect(0, 0, width, height);
+        this._ctx.fillRect(0, 0, width, this._canvasHeight);
         this._drawProgress();
         this._drawScales();
     }
     _formatScale(value) {
-        if (this._options.scaleFormat) {
-            return this._options.scaleFormat(value);
+        if (this._options.scale.formatter) {
+            return this._options.scale.formatter(value);
         }
         const t = convertTime(new Date(value).getTime());
-        if (this._options.scale === 'day') {
+        if (this._options.scale.type === 'year') {
+            return `${padStart(t.year, 4, '0')}年`;
+        }
+        else if (this._options.scale.type === 'month') {
+            return `${padStart(t.year, 4, '0')}年${padStart(t.month, 2, '0')}月`;
+        }
+        else if (this._options.scale.type === 'day') {
             return `${padStart(t.month, 2, '0')}月${padStart(t.day, 2, '0')}日`;
         }
-        else if (this._options.scale === 'hour') {
+        else if (this._options.scale.type === 'hour') {
             return `${padStart(t.day, 2, '0')}日${padStart(t.hour, 2, '0')}时`;
+        }
+        else if (this._options.scale.type === 'minute') {
+            return `${padStart(t.hour, 2, '0')}时${padStart(t.minute, 2, '0')}分`;
         }
         else {
             return value;
@@ -2778,16 +2892,16 @@ class CanvasTimeLineTheme02 {
     getMouseDatetime(mouseX, pointX) {
         const boundary = this._canvas.getBoundingClientRect();
         const width = Math.round(mouseX - boundary.left) - this._offsetX.current;
-        let index01 = Math.floor(width / this._options.scaleSpace);
+        let index01 = Math.floor(width / this._options.scale.space);
         let data = this._times[index01];
         if (!data)
             return;
         let index02 = 0;
         if (width < pointX) {
-            index02 = Math.floor((width % this._options.scaleSpace) / (this._options.scaleSpace / data.data.length));
+            index02 = Math.floor((width % this._options.scale.space) / (this._options.scale.space / data.data.length));
         }
         else {
-            index02 = Math.ceil((width % this._options.scaleSpace) / (this._options.scaleSpace / data.data.length));
+            index02 = Math.ceil((width % this._options.scale.space) / (this._options.scale.space / data.data.length));
             if (index02 > data.data.length - 1) {
                 index01++;
                 index02 = 0;
@@ -2802,36 +2916,46 @@ class CanvasTimeLineTheme02 {
         const time = data.data[index02];
         return time;
     }
+    _getMaxWidth() {
+        let res = this._times.length * this._options.scale.space;
+        if (last(this._times)?.data.length === 1) {
+            res -= this._options.scale.space;
+        }
+        return res;
+    }
     _drawProgress() {
-        const width = this._getCurrentLeft(this.currentTime);
-        const maxWidth = this._times.length * this._options.scaleSpace;
+        this._getMaxWidth();
+        let width = this._getCurrentLeft(this.currentTime);
         this._currentWidth = width;
         const currentScale = width + this._offsetX.current;
+        const penAdj = this._options.progress.size / 2;
         this._ctx.beginPath();
-        this._ctx.lineWidth = progressHeight;
+        this._ctx.lineWidth = this._options.progress.size;
         this._ctx.lineCap = 'round';
-        this._ctx.strokeStyle = this._options.style.progressBarBackgroundColor;
-        this._ctx.moveTo(this._offsetX.current + progressHeight / 2, progressHeight / 2);
-        this._ctx.lineTo(this._offsetX.current + maxWidth - progressHeight / 2, progressHeight / 2);
+        this._ctx.strokeStyle = this._options.progress.backgroundStaticColor;
+        this._ctx.moveTo(penAdj, penAdj);
+        this._ctx.lineTo(this._canvas.offsetWidth - penAdj, penAdj);
         this._ctx.stroke();
         this._ctx.closePath();
-        const starat = this._offsetX.current + progressHeight / 2;
         let end = currentScale;
         if (end >= 0) {
-            end -= progressHeight / 2;
+            end -= penAdj;
             this._ctx.beginPath();
-            this._ctx.lineWidth = progressHeight;
-            this._ctx.strokeStyle = this._options.style.progressBarActiveColor;
-            this._ctx.moveTo(starat, progressHeight / 2);
-            this._ctx.lineTo(end, progressHeight / 2);
+            this._ctx.lineWidth = this._options.progress.size;
+            this._ctx.strokeStyle = this._options.progress.backgroundActiveColor;
+            this._ctx.moveTo(penAdj, penAdj);
+            this._ctx.lineTo(Math.max(end, penAdj), penAdj);
             this._ctx.stroke();
             this._ctx.closePath();
         }
         if (this.currentTime && currentScale <= this._canvasRoom.offsetWidth && currentScale >= 0) {
             this._currentPopper.style.display = 'block';
-            this._currentPopper.innerText = this._options.labelFormat ? this._options.labelFormat(this.currentTime) : this.currentTime;
+            this._currentPopper.innerText = this._options.label.formatter
+                ? this._options.label.formatter(this.currentTime)
+                : this.currentTime;
             const boundary = this._canvas.getBoundingClientRect();
-            this._currentPopper.style.left = boundary.left + currentScale - this._currentPopper.offsetWidth / 2 + 'px';
+            this._currentPopper.style.left =
+                boundary.left + currentScale - this._currentPopper.offsetWidth / 2 + 'px';
             this._currentPopper.style.top = boundary.top - this._currentPopper.offsetHeight - 8 + 'px';
         }
         else {
@@ -2841,25 +2965,31 @@ class CanvasTimeLineTheme02 {
     _drawScales() {
         this._ctx.lineCap = 'butt';
         for (let index = 1; index < this._times.length; index++) {
+            // 如果最后一个时间子项只有一个，则不绘制刻度及长度
+            if (index === this._times.length - 1 && last(this._times)?.data.length === 1) {
+                continue;
+            }
             this._ctx.beginPath();
             this._ctx.lineWidth = 1;
-            this._ctx.strokeStyle = this._options.style.scaleLineColor;
-            let x = this._options.scaleSpace * index - 0.5 + this._offsetX.current;
-            this._ctx.moveTo(x, 0 + progressHeight);
-            this._ctx.lineTo(x, 6 + progressHeight);
+            this._ctx.strokeStyle = this._options.scale.lineColor;
+            let x = this._options.scale.space * index - 0.5 + this._offsetX.current;
+            this._ctx.moveTo(x, 0 + this._options.progress.size);
+            this._ctx.lineTo(x, this._options.scale.height + this._options.progress.size);
             this._ctx.stroke();
             this._ctx.closePath();
+            // 绘制文本
             this._ctx.beginPath();
-            this._ctx.fillStyle = this._options.style.scaleFontColor;
-            this._ctx.font = this._options.style.font;
+            this._ctx.textBaseline = 'ideographic';
+            this._ctx.fillStyle = this._options.scale.fontColor;
+            this._ctx.font = `${this._options.scale.font.size}px ${this._options.scale.font.family}`;
             const text = this._formatScale(this._times[index].value);
             const txtWidth = this._ctx.measureText(text).width;
-            this._ctx.fillText(text, x - Math.floor(txtWidth / 2), 18 + progressHeight);
+            this._ctx.fillText(text, x - Math.floor(txtWidth / 2), this._canvasHeight);
             this._ctx.closePath();
         }
     }
     _scrollToCurrent() {
-        const width = this._getCurrentLeft(this.currentTime) - 100;
+        const width = this._getCurrentLeft(this.currentTime) - this._options.progress.size / 2;
         this._pressX = 0;
         this._offsetX.pre = 0;
         this._offsetX.current = this._offsetX.pre;
@@ -2870,12 +3000,17 @@ class CanvasTimeLineTheme02 {
         this._offsetX.pre = this._offsetX.current;
     }
     setDateTime(data, isMouseEvent) {
-        if (this._locking)
-            throw `时间设置失败： "${data}"。上一个切换未完成！`;
+        if (this.currentTime && this.currentTime === data)
+            return;
+        if (this._locking) {
+            console.error(`时间设置失败： "${data}"。上一个切换未完成！`);
+            return this;
+        }
         if (!this._originTimes.some(function (value) {
             return value === data;
         })) {
-            throw `时间设置失败： "${data}" 不在列表中`;
+            console.error(`时间设置失败： "${data}" 不在列表中`);
+            return this;
         }
         this.currentTime = data;
         if (isMouseEvent) {
@@ -2884,11 +3019,20 @@ class CanvasTimeLineTheme02 {
         else {
             this._scrollToCurrent();
         }
-        this._locking = true;
-        this._options?.onChange?.(this.currentTime, () => {
-            this._locking = false;
-            this._checkAutoPlay();
-        });
+        if (this._options?.onChange) {
+            this._locking = true;
+            const query = {
+                value: this.currentTime,
+                start: head(this._originTimes),
+                end: last(this._originTimes),
+                prev: this._getPrevTime(),
+                next: this._getNextTime()
+            };
+            this._options.onChange(query, () => {
+                this._locking = false;
+                this._checkAutoPlay();
+            });
+        }
         return this;
     }
     dispose() {
