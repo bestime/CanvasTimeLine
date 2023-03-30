@@ -4,87 +4,178 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>时间轴</title>    
+    <script src="https://cdn.bootcdn.net/ajax/libs/dayjs/1.11.7/dayjs.min.js"></script>
     <link rel="stylesheet" href="./index.css"/>
     <script src="./index.min.js"></script>    
   </head>
   <body style="background-color: #545454;">
+    <div id="demo-01" style="margin:20px 100px 0 100px;"></div>
+    <div id="demo-02" style="margin:20px 100px 0 100px;"></div>
+    <div id="demo-03" style="margin:20px 100px 0 100px;"></div>
+    <div id="demo-04" style="margin:20px 100px 0 100px;"></div>
+    <div id="demo-05" style="margin:20px 100px 0 100px;"></div>
     
-
-    <div >
-      <input id="time-value" value="2023-03-03 12:08:30"/>
-      <button id="time-button">设置时间</button>
-    </div>
-    <div id="demo" style="margin:20px 100px 0 100px;"></div>
-    <script src="https://cdn.bootcdn.net/ajax/libs/dayjs/1.11.7/dayjs.min.js"></script>
     <script type="text/javascript">
 
-
-      function createTimeData () {
-        const now = dayjs()
-        const list = []
-        for(let a=0;a<350;a++) {
-          list.unshift(now.subtract(a, 'minute').format('YYYY-MM-DD HH:mm:ss'))
-          list.push(now.add(a+1, 'minute').format('YYYY-MM-DD HH:mm:ss'))
+    ;(function () {
+        function createTimeData () {
+          const now = dayjs('2023-03-08 12:00:00')
+          const list = []
+          for(let a=0;a<400;a++) {
+            list.unshift(now.subtract(a, 'second').format('YYYY-MM-DD HH:mm:ss'))
+            list.push(now.add(a+1, 'second').format('YYYY-MM-DD HH:mm:ss'))
+          }
+          return list
         }
-        return list
-      }
+
+        const iCanvasTimeLine = new CanvasTimeLineTheme02(document.getElementById('demo-01'), {
+          scale: {
+            type: 'minute',
+            space: 150,
+            height: 16,
+            bottom: 10,
+            formatter: function (datetime) {
+              return dayjs(datetime).format("HH时MM分")
+            },
+            font: {
+              size: 30
+            }
+          },
+          autoplay: {
+            enabled: true
+          },
+          progress: {
+            size: 20
+          },
+          onChange: function (datetime, next) {
+            next()
+          }
+        })
+        iCanvasTimeLine.setData(createTimeData())
+      })();
+
+      ;(function () {
+        function createTimeData () {
+          const now = dayjs('2023-03-08 12:00:00')
+          const list = []
+          for(let a=0;a<400;a++) {
+            list.unshift(now.subtract(a, 'minute').format('YYYY-MM-DD HH:mm:ss'))
+            list.push(now.add(a+1, 'minute').format('YYYY-MM-DD HH:mm:ss'))
+          }
+          return list
+        }
+
+        const iCanvasTimeLine = new CanvasTimeLineTheme02(document.getElementById('demo-02'), {
+          autoplay: {
+            enabled: true
+          },
+          scale: {
+            type: 'hour',            
+          },         
+          label: {
+            formatter: function (datetime) {
+              return dayjs(datetime).format("YYYY-MM-DD HH:mm")
+            }
+          },
+          onChange: function (datetime, next) {
+            next()
+          }
+        })
+        iCanvasTimeLine.setData(createTimeData())
+      })();
+
+      ;(function () {
+        function createTimeData () {
+          const now = dayjs('2023-03-08 12:00:00')
+          const list = []
+          for(let a=0;a<400;a++) {
+            list.unshift(now.subtract(a, 'hour').format('YYYY-MM-DD HH:mm:ss'))
+            list.push(now.add(a+1, 'hour').format('YYYY-MM-DD HH:mm:ss'))
+          }
+          return list
+        }
+
+        const iCanvasTimeLine = new CanvasTimeLineTheme02(document.getElementById('demo-03'), {
+          scale: {
+            type: 'day'
+          },
+          onChange: function (datetime, next) {
+            next()
+          },
+          autoplay: {
+            enabled: true
+          }
+        })
+        iCanvasTimeLine.setData(createTimeData())
+      })();
+
+      ;(function () {
+        function createTimeData () {
+          const now = dayjs('2023-03-08 12:00:00')
+          const list = []
+          for(let a=0;a<400;a++) {
+            list.unshift(now.subtract(a, 'day').format('YYYY-MM-DD HH:mm:ss'))
+            list.push(now.add(a+1, 'day').format('YYYY-MM-DD HH:mm:ss'))
+          }
+          return list
+        }
+
+        const iCanvasTimeLine = new CanvasTimeLineTheme02(document.getElementById('demo-04'), {
+          scale: {
+            type: 'month',
+            formatter: function (datetime) {
+              return dayjs(datetime).format("YYYY/MM")
+            },
+          },
+          label: {
+            formatter: function (datetime) {
+              return dayjs(datetime).format("YYYY-MM-DD")
+            }
+          },
+          autoplay: {
+            enabled: true
+          },
+          onChange: function (datetime, next) {
+            next()
+          }
+        })
+        iCanvasTimeLine.setData(createTimeData())
+      })();
+
+      ;(function () {
+        function createTimeData () {
+          const now = dayjs('2023-03-08 12:00:00')
+          const list = []
+          for(let a=0;a<10;a++) {
+            list.unshift(now.subtract(a, 'year').format('YYYY-MM-DD HH:mm:ss'))
+            list.push(now.add(a+1, 'year').format('YYYY-MM-DD HH:mm:ss'))
+          }
+          return list
+        }
+
+        const iCanvasTimeLine = new CanvasTimeLineTheme02(document.getElementById('demo-05'), {
+          scale: {
+            type: 'year',
+          },
+          autoplay: {
+            enabled: true,
+            interval: 1000
+          },
+          label: {
+            formatter: function (datetime) {
+              return dayjs(datetime).format("YYYY年")
+            }
+          },
+          onChange: function (datetime, next) {
+            next()
+          }
+        })
+        iCanvasTimeLine.setData(createTimeData())
+      })();
 
       
 
-      const iCanvasTimeLine = new CanvasTimeLineTheme02(document.getElementById('demo'), {
-        scale: 'hour',
-        style: {
-          scaleLineColor: 'white'
-        },
-        scaleSpace: 100,
-        labelFormat: function (datetime) {
-          return dayjs(datetime).format("YYYY-MM-DD HH:mm")
-        },
-        scaleFormat: function (datetime) {
-          return dayjs(datetime).format("MM/DD HH时")
-        },
-        onChange: function (datetime, next) {
-          console.log("时间改变", datetime)
-          document.getElementById('time-value').value = datetime.value
-          next()
-        }
-      })
-
-      let list = [
-        '2023-03-23 12:00:00',
-        '2023-03-23 13:00:00',
-        '2023-03-23 14:00:00',
-        '2023-03-23 15:00:00',
-        '2023-03-23 16:00:00',
-        '2023-03-23 17:00:00',
-        '2023-03-23 18:00:00',
-        '2023-03-23 18:00:00',
-        '2023-03-23 20:00:00',
-        '2023-03-23 21:00:00',
-        '2023-03-23 22:00:00',
-        '2023-03-24 00:00:00',
-        '2023-03-24 02:00:00',
-        '2023-03-25 00:00:00',
-        '2023-03-25 01:00:00',
-        '2023-03-25 02:00:00',
-        '2023-03-25 03:00:00',
-      ]
-
-      list = createTimeData()
-      console.log("list", list)
-
-      iCanvasTimeLine.setData(list)
-      // iCanvasTimeLine.setDateTime('2023-03-28 12:00:00')
-
-
-     
-
-      document.getElementById('time-button').onclick = function () {
-        const time = document.getElementById('time-value').value
-        iCanvasTimeLine.setDateTime(time)
-      }
-
-      // console.log("iCanvasTimeLine", iCanvasTimeLine)
+      
 
     </script>
   </body>
