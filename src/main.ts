@@ -145,7 +145,7 @@ export default class CanvasTimeLine{
     this._canvas.onmousemove = (ev) => {
       // if(this._isMouseDown) return;
       const boundary = this._canvas.getBoundingClientRect();
-      this._mouseX = ev.clientX - boundary.left;
+      this._mouseX = Math.round(ev.clientX - boundary.left);
 
       this.draw()
     }
@@ -157,7 +157,7 @@ export default class CanvasTimeLine{
 
     this._canvas.ondblclick = (ev) => {
       const boundary = this._canvas.getBoundingClientRect();
-      const x = ev.clientX - boundary.left;
+      const x = Math.round(ev.clientX - boundary.left);
       this.setDateTime(this._times[x]);
     };
   }
