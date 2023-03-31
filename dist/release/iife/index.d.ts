@@ -36,8 +36,13 @@ declare namespace CanvasTimeLineTheme02 {
       space: number;
       /** 刻度线底部距离 */
       bottom: number;
-      /** 刻度格式化 */
-      formatter?: (datetime: string) => string;
+      /**
+       * 刻度格式化
+       * @param datetime - 当前刻度时间
+       * @param index - 当前刻度索引（内部从小到大排过序）
+       * @returns
+       */
+      formatter?: (datetime: string, index: number) => string;
       /** 刻度字体 */
       font: {
         size: number;
@@ -47,16 +52,25 @@ declare namespace CanvasTimeLineTheme02 {
     progress: {
       /** 进度条高度 */
       size: number;
+      /** 进度条内间距 */
+      padding: number;
       /** 进度条背景色 */
       backgroundStaticColor: string;
       /** 进度条高亮背景色 */
       backgroundActiveColor: string;
+      /** 进度条边框色 */
+      borderColor: string;
     };
     label: {
       /** label左侧间距，不填则居中 */
       leftSpace?: number;
-      /** label格式化 */
-      formatter: (datetime: string) => string;
+      /**
+       * label格式化
+       * @param datetime - label时间
+       * @param index - label索引（内部从小到大排过序）
+       * @returns
+       */
+      formatter?: (datetime: string, index: number) => string;
     };
 
     autoplay: {
@@ -68,7 +82,12 @@ declare namespace CanvasTimeLineTheme02 {
 
     beforeDraw?: () => void
 
-    /** 时间选择回调 */
+    /**
+     * 时间选择回调
+     * @param time - 当前选中的时间
+     * @param next - 执行此回调之后才可选择其它时间
+     * @returns
+     */
     onChange?: (time: SelectItem, next: () => void) => void;
   }
 
@@ -86,16 +105,16 @@ declare class CanvasTimeLineTheme02 {
   setDateTime(data: string): this;
 
   /**
-   * 销毁实例
-   */
-  dispose(): void;
-
-  /**
    * 设置时间列表
    * @param data - 时间列表
    * @returns 当前实例
    */
   setData(data: string[]): this;
+
+  /**
+   * 清空
+   */
+  clear(): this;
 
   /**
    * 播放
@@ -106,4 +125,9 @@ declare class CanvasTimeLineTheme02 {
    * 暂停
    */
   stop(): this;
+
+  /**
+   * 销毁实例
+   */
+  dispose(): void;
 }

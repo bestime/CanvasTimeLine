@@ -1,10 +1,16 @@
 import { convertTime } from './tool'
 
-export default function convertList (data: string[], scale: CanvasTimeLineTheme02.Scale) {
-  
+export interface TimeItem {
+  value: string
+  index: number,
+  scaleLabel: string,
+  tipLabel: string
+}
+
+export default function convertList (data: string[], scale: CanvasTimeLineTheme02.Scale) {  
   const cache: Record<string, {
     value: string,
-    data: string[]
+    data: TimeItem[]
   }> = {}
   
   for(let index = 0; index<data.length; index++) {
@@ -32,8 +38,12 @@ export default function convertList (data: string[], scale: CanvasTimeLineTheme0
       }
     }
 
-    cache[prefix].data.push(value)
-    
+    cache[prefix].data.push({
+      value,
+      index,
+      scaleLabel: '',
+      tipLabel: ''
+    })    
   }
 
   const res = []
@@ -44,7 +54,6 @@ export default function convertList (data: string[], scale: CanvasTimeLineTheme0
   res.sort(function (a, b) {
     return new Date(a.value).getTime() - new Date(b.value).getTime()
   })
-
 
   return res
 }

@@ -26,7 +26,7 @@
         function createTimeData () {
           const now = dayjs('2023-03-08 12:00:00')
           const list = []
-          for(let a=0;a<400;a++) {
+          for(let a=0;a<100;a++) {
             list.unshift(now.subtract(a, 'second').format('YYYY-MM-DD HH:mm:ss'))
             list.push(now.add(a+1, 'second').format('YYYY-MM-DD HH:mm:ss'))
           }
@@ -39,21 +39,36 @@
             space: 150,
             height: 16,
             bottom: 10,
-            formatter: function (datetime) {
-              return dayjs(datetime).format("HH时MM分")
+            formatter: function (datetime, index) {
+              // console.log("格式化刻度", index, '=>', datetime)
+              return dayjs(datetime).format("HH时mm分")
             },
             font: {
               size: 30
             }
           },
+          autoplay: {
+            enabled: false,
+            interval: 16
+          },
+          label: {
+            formatter: function (datetime, index) {
+              // console.log("格式化提示框", index, datetime)
+              return dayjs(datetime).format("YYYY/MM/DD HH:mm:ss")
+            },
+          },
           progress: {
-            size: 20
+            size: 40,
+            padding: 10
           },
           onChange: function (datetime, next) {
             next()
           }
         })
         iCanvasTimeLine.setData(createTimeData())
+        window.getTime = createTimeData
+        window.test = iCanvasTimeLine
+        console.log("iCanvasTimeLine", iCanvasTimeLine)
       })();
 
       ;(function () {
