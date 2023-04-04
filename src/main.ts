@@ -89,8 +89,7 @@ export default class CanvasTimeLineTheme02 {
     this._playBtn.className = 'play';    
 
     this._canvasRoom = document.createElement('div');
-    this._canvasRoom.className = 'canvas-room';
-    this._canvasRoom.style.borderTopWidth = this._options.progress.padding + 'px'
+    this._canvasRoom.className = 'canvas-room';    
 
     this._canvasPadding = document.createElement('div');    
     this._canvasPadding.className = 'canvas-padding';
@@ -152,6 +151,7 @@ export default class CanvasTimeLineTheme02 {
   }
 
   _updateStyle () {    
+    this._canvasRoom.style.borderTopWidth = this._options.progress.padding + 'px'
     this._canvasPadding.style.padding = [
       0,
       this._options.progress.padding + 'px'
@@ -162,8 +162,17 @@ export default class CanvasTimeLineTheme02 {
     const _outerProgHeight = this._options.progress.padding * 2 + this._options.progress.size
     this._outerProgress.style.height = _outerProgHeight + 'px'
     this._outerProgress.style.borderRadius = Math.ceil(_outerProgHeight/2) + 'px'
-    this._canvasPadding.style.marginTop =
-    (this._playBtn.offsetHeight - this._options.progress.size-this._options.progress.padding) / 2 + 'px';
+    
+    const top = (this._playBtn.offsetHeight - this._options.progress.size-this._options.progress.padding*2) / 2
+    if(top>0) {
+      this._canvasPadding.style.marginTop = top + 'px';
+      this._playBtn.style.marginTop = '0px';
+
+    } else {
+      this._canvasPadding.style.marginTop = '0px';
+      this._playBtn.style.marginTop = -top + 'px';
+    }
+    
   }
 
   play() {
@@ -263,10 +272,6 @@ export default class CanvasTimeLineTheme02 {
     document.removeEventListener('mousemove', this._onMouesmove);
   }
 
-  // private _getRealViewWidth () {
-  //   return this._
-  // }
-
   private _onMouesmove(ev: MouseEvent) {
     const x = ev.clientX - this._pressX;
     let left = x + this._offsetX.pre + this._minLeftSpace;
@@ -297,12 +302,19 @@ export default class CanvasTimeLineTheme02 {
 
 
       if (time) {   
-        const currentScale = this._offsetX.current + this._getTimeTickWidth(time.value);
+        let currentScale = this._offsetX.current + this._getTimeTickWidth(time.value);
+        const diff = currentScale - this._canvasRoom.offsetWidth
+        // console.log("currentScale", currentScale, diff)
+        if(currentScale<0) {
+          currentScale = 0
+        } else if(diff>0) {
+          currentScale -= diff
+        }
 
         if (!time.tipLabel) {
           time.tipLabel = this._options.label.formatter?.(time.value, time.index) ?? time.value;
         }
-console.log("currentScale", currentScale)
+
         this._previewPopper.innerText = time.tipLabel;
         this._previewPopper.style.display = 'block';
         const boundary = this._canvas.getBoundingClientRect();
@@ -318,7 +330,7 @@ console.log("currentScale", currentScale)
       this._previewPopper.style.display = 'none';
       this._mousein = false;
       this._checkAutoPlay();
-    }, 200);
+    }, 500);
 
     this._canvas.onmouseout = this._canvas.onmouseleave = this._mouseLeaveDebFunc;
 
@@ -382,7 +394,7 @@ console.log("currentScale", currentScale)
       width = maxWidth;
       this._offsetX.current = 0;
       this._offsetX.pre = 0;
-    }
+    }    
 
     this._canvas.width = width;
     this._canvas.height = this._canvasHeight;
@@ -417,15 +429,9 @@ console.log("currentScale", currentScale)
     }
   }
 
-
-
   private _getMouseDatetime(mouseX: number, pointX: number) {
     const boundary = this._canvas.getBoundingClientRect();
-    let width = Math.round(mouseX - boundary.left);
-
-
-    width -= this._offsetX.current
-
+    let width = Math.round(mouseX - boundary.left) - this._offsetX.current;
     let index01 = Math.floor(width / this._options.scale.space);
     let data = this._times[index01];
     if (!data) return;
@@ -451,8 +457,8 @@ console.log("currentScale", currentScale)
       data = this._times[index01];
       index02 = data.data.length - 1;
     }
-    const time = data.data[index02];
-    return time;
+
+    return data.data[index02];
   }
 
   private _getMaxWidth() {
@@ -467,9 +473,8 @@ console.log("currentScale", currentScale)
   private _drawProgress() {
     if (!this._currentTime) {
       return;
-    }
-    
-    this._currentWidth = this._currentWidth;    
+    }    
+ 
     const penAdj = this._options.progress.size / 2;
 
     this._ctx.beginPath();
@@ -524,7 +529,7 @@ console.log("currentScale", currentScale)
     this._ctx.lineWidth = 1;
     this._ctx.strokeStyle = this._options.scale.lineColor;
     this._ctx.beginPath();
-    for (let index = 0; index < this._times.length; index++) {
+    for (let index = 1; index < this._times.length; index++) {
       // 如果最后一个时间子项只有一个，则不绘制刻度及长度
       if (index === this._times.length - 1 && last(this._times)?.data.length === 1) {
         continue;
@@ -577,8 +582,7 @@ console.log("currentScale", currentScale)
       return this;
     }
 
-    this._currentTime = findTimeItem(this._times, data);
-    
+    this._currentTime = findTimeItem(this._times, data);    
 
     if (!this._currentTime) {
       this.clear();
@@ -588,6 +592,16 @@ console.log("currentScale", currentScale)
     this._currentWidth = this._getTimeTickWidth(this._currentTime.value)
 
     if (isMouseEvent) {
+      const currentScale = this._currentWidth + this._offsetX.current;
+      const diff = currentScale - this._canvasRoom.offsetWidth
+      if(currentScale<0) {
+        this._offsetX.current -= currentScale
+        this._offsetX.pre -= currentScale
+      } else if(diff>0) {
+        this._offsetX.current -= diff
+        this._offsetX.pre -= diff
+      }
+      
       this.draw();
     } else {
       this._scrollToCurrent();

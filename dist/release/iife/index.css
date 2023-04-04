@@ -111,6 +111,8 @@
   /* background-color: red; */
   position:relative;
   border-top: transparent solid 0px;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 
